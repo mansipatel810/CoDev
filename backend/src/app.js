@@ -6,13 +6,29 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const projectRoutes = require('../src/routes/projectRoutes/project.routes');
 const aiRoutes = require('../src/routes/aiRoutes/ai.routes');
+const session = require('express-session');
 
 
-app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(morgan('tiny'));
 app.use(cookieParser()); 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true, // <-- important to allow cookies
+}));
+app.use(session({
+  secret: 'your_secret_key', // change this to a strong secret in production
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false, // set to true if using HTTPS
+    sameSite: 'lax' // or 'none' if cross-site
+  }
+}));
 
 
 

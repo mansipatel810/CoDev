@@ -6,6 +6,7 @@ const cacheClient=require('../services/cacheService/cache.service ')
 const authMiddleware = async (req, res, next) => {
     try {
         const token = req.cookies.token  || req.headers.authorization?.split(" ")[1] || req.body.token;
+        // console.log("Token found in request:  midddleware ", token);
         if (!token) {
             return next(new customError("You are not logged in", 401));
         }

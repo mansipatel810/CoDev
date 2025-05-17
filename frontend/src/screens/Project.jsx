@@ -172,20 +172,20 @@ const Project = () => {
 
   function saveFileTree(ft) {
     axios.put('/api/project/update-file-tree', {
-        projectId: project._id,
-        fileTree: ft
+      projectId: project._id,
+      fileTree: ft
     }).then(res => {
-        console.log(res.data)
+      console.log(res.data)
     }).catch(err => {
-        console.log(err)
+      console.log(err)
     })
-}
+  }
 
 
   return (
-    <main className="h-screen w-screen flex">
-      <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300">
-        <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute z-10 top-0">
+    <main className="h-screen w-screen flex bg-[#0e0e10]">
+      <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300  ">
+        <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
           <button
             className="flex gap-2"
             onClick={() => setIsModalOpen(true)}
@@ -200,34 +200,49 @@ const Project = () => {
             <i className="ri-group-fill"></i>
           </button>
         </header>
-        <div className="conversation-area pt-14 pb-10 flex-grow flex flex-col h-full relative">
+        <div className="conversation-area pt-14 pb-10 bg-[#0e0e10] flex-grow flex flex-col h-full relative">
 
           <div
-            ref={messageBox}
-            className="message-box p-1 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide">
-            {messages.map((msg, index) => (
-              <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${msg.sender._id == user._id.toString() && 'ml-auto'}  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}>
-                <small className='opacity-65 text-xs'>{msg.sender.userName}</small>
-                <div className='text-sm'>
-                  {msg.sender._id === 'ai' ?
-                    WriteAiMessage(msg.message)
-                    : <p>{msg.message}</p>}
+            className="relative w-[95%] h-[95%] mx-auto my-auto rounded-xl"
+            style={{
+              backgroundImage: "url('/public/robot.png')",
+              backgroundSize: 'cover', backgroundPosition: 'center'
+            }}
+          >
+            <div
+              ref={messageBox}
+              className="message-box flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide
+               bg-white/10 backdrop-blur-md border border-white/30 rounded-xl shadow-lg pt-2 m-4 w-full h-full mx-auto my-auto"
+            >
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} 
+                    ${msg.sender._id == user._id.toString() ? 'ml-auto' : ''} 
+                    message flex flex-col p-2 bg-[#0e0e10] text-white w-fit rounded-md`}
+                >
+                  <small className='opacity-65 text-xs'>{msg.sender.userName}</small>
+                  <div className='text-sm'>
+                    {msg.sender._id === 'ai' ? WriteAiMessage(msg.message) : <p>{msg.message}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <div className="inputField w-full flex absolute bottom-0">
+
+
+          <div className="inputField w-full flex absolute bg-[#0e0e10] bottom-0 mb-1">
             <input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="p-2 px-4 border-none outline-none flex-grow"
+              className="p-2 px-4 text-white bg-[#2B2B30]  ml-4 mr-1 rounded-xl  outline-none flex-grow"
               type="text"
               placeholder="Enter message"
             />
             <button
               onClick={send}
-              className="px-5 bg-slate-950 text-white"
+              className="px-4 mr-1 rounded-4xl h-[5vh] w-[5vh] flex justify-center items-center bg-gradient-to-r from-purple-400 to-blue-400 text-white"
             >
               <i className="ri-send-plane-fill"></i>
             </button>
@@ -267,9 +282,9 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="right  bg-red-50 flex-grow h-full flex">
-        <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
-          <div className="file-tree w-full">
+      <section className="right  bg-#2B2B30 flex-grow h-full flex border-2 border-zinc-500">
+        <div className="explorer h-full max-w-64 min-w-52 bg-[#474B53] border-r-2 border-zinc-500 ">
+          <div className="file-tree w-full flex flex-col gap-[2px] mt-1">
             {Object.keys(fileTree).map((file, index) => (
               <button
                 key={index}
@@ -279,7 +294,7 @@ const Project = () => {
                     ...new Set([...openFiles, file]),
                   ])
                 }}
-                className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 bg-slate-300 w-full"
+                className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
               >
                 <p className="font-semibold text-lg">{file}</p>
               </button>
@@ -287,15 +302,15 @@ const Project = () => {
           </div>
         </div>
 
-        <div className="code-editor flex flex-col  flex-grow h-full shrink">
+        <div className="code-editor flex flex-col  flex-grow h-full shrink bg-[#0e0e10] border-r-2 border-zinc-500">
           <div className="top flex justify-between w-full">
-            <div className="files flex">
+            <div className="files flex gap-[2px] m-1">
               {
                 openFiles.map((file, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentFile(file)}
-                    className={`open-file cursor-pointer p-2 px-4 flex items-center w-fit gap-2 bg-slate-300 ${currentFile === file ? 'bg-slate-400' : ''}`}>
+                    className={`open-file cursor-pointer p-2 px-4  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
                     <p
                       className='font-semibold text-lg'
                     >{file}</p>
@@ -338,7 +353,7 @@ const Project = () => {
                   })
 
                 }}
-                className='run p-2 px-4 bg-slate-600 text-zinc-500'
+                className='run p-2 px-4 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl m-2 text-white'
               >
                 run
               </button>
@@ -348,61 +363,61 @@ const Project = () => {
           </div>
 
 
-          <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
-                        {
-                            fileTree[ currentFile ] && (
-                                <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
-                                    <pre
-                                        className="hljs h-full">
-                                        <code
-                                            className="hljs h-full outline-none"
-                                            contentEditable
-                                            suppressContentEditableWarning
-                                            onBlur={(e) => {
-                                                const updatedContent = e.target.innerText;
-                                                const ft = {
-                                                    ...fileTree,
-                                                    [ currentFile ]: {
-                                                        file: {
-                                                            contents: updatedContent
-                                                        }
-                                                    }
-                                                }
-                                                setFileTree(ft)
-                                                saveFileTree(ft)
-                                            }}
-                                            dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[ currentFile ].file.contents).value }}
-                                            style={{
-                                                whiteSpace: 'pre-wrap',
-                                                paddingBottom: '25rem',
-                                                counterSet: 'line-numbering',
-                                            }}
-                                        />
-                                    </pre>
-                                </div>
-                            )
+          <div className="bottom flex flex-grow max-w-full shrink  overflow-auto">
+            {
+              fileTree[currentFile] && (
+                <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
+                  <pre
+                    className="hljs h-full">
+                    <code
+                      className="hljs h-full outline-none"
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const updatedContent = e.target.innerText;
+                        const ft = {
+                          ...fileTree,
+                          [currentFile]: {
+                            file: {
+                              contents: updatedContent
+                            }
+                          }
                         }
-                    </div>
-
+                        setFileTree(ft)
+                        saveFileTree(ft)
+                      }}
+                      dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[currentFile].file.contents).value }}
+                      style={{
+                        whiteSpace: 'pre-wrap',
+                        paddingBottom: '25rem',
+                        counterSet: 'line-numbering',
+                      }}
+                    />
+                  </pre>
                 </div>
+              )
+            }
+          </div>
 
-                {iframeUrl && webContainer &&
-                    (<div className="flex min-w-96 flex-col h-full">
-                        <div className="address-bar">
-                            <input type="text"
-                                onChange={(e) => setIframeUrl(e.target.value)}
-                                value={iframeUrl} className="w-full p-2 px-4 bg-slate-200" />
-                        </div>
-                        <iframe src={iframeUrl} className="w-full h-full"></iframe>
-                    </div>)
-                }
-        
+        </div>
+
+        {iframeUrl && webContainer &&
+          (<div className="flex min-w-96 flex-col h-full bg-[#]">
+            <div className="address-bar">
+              <input type="text"
+                onChange={(e) => setIframeUrl(e.target.value)}
+                value={iframeUrl} className="w-full p-2 px-4 bg-[#515254] border-2 my-1 border-zinc-500" />
+            </div>
+            <iframe src={iframeUrl} className="w-full h-full bg-zinc-200 text-red-white "></iframe>
+          </div>)
+        }
+
       </section>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-md w-96 max-w-full relative">
-            <header className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 backdrop-blur-md bg-white/10 shadow-lg bg-opacity-50 flex items-center justify-center">
+          <div className="bg-[#1a1a1a] p-4 rounded-md w-96 max-w-full relative">
+            <header className="flex justify-between  text-white items-center mb-4">
               <h2 className="text-xl font-semibold">
                 Select User
               </h2>
@@ -417,28 +432,36 @@ const Project = () => {
               {users.map((user) => (
                 <div
                   key={user.id}
-                  className={`user cursor-pointer hover:bg-slate-200 ${Array.from(selectedUserId).indexOf(
-                    user._id
-                  ) != -1
-                    ? 'bg-slate-200'
-                    : ''
-                    } p-2 flex gap-2 items-center`}
-                  onClick={() =>
-                    handleUserClick(user._id)
-                  }
+                  onClick={() => handleUserClick(user._id)}
+                  className="cursor-pointer"
                 >
-                  <div className="aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">
-                    <i className="ri-user-fill absolute"></i>
+                  <div
+                    className={`p-[2px] rounded-xl transition ${Array.from(selectedUserId).includes(user._id)
+                        ? 'bg-gradient-to-r from-purple-400 to-blue-400'
+                        : 'hover:bg-gradient-to-r from-purple-400 to-blue-400'
+                      }`}
+                  >
+                    <div
+                      className={`rounded-xl p-2 flex gap-2 items-center ${Array.from(selectedUserId).includes(user._id)
+                          ? 'bg-[#1a1a1a]'
+                          : 'bg-[#1a1a1a]'
+                        }`}
+                    >
+                      <div className="aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">
+                        <i className="ri-user-fill absolute"></i>
+                      </div>
+                      <h1 className="font-semibold text-lg text-white">
+                        {user.userName}
+                      </h1>
+                    </div>
                   </div>
-                  <h1 className="font-semibold text-lg">
-                    {user.userName}
-                  </h1>
                 </div>
               ))}
+
             </div>
             <button
               onClick={addCollaborators}
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-purple-400 to-blue-400 text-white rounded-md"
             >
               Add Collaborators
             </button>
