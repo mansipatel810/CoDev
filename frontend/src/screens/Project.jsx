@@ -6,6 +6,8 @@ import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
 import { getWebContainer } from '../config/webContainer'
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -34,8 +36,11 @@ const Project = () => {
   const [message, setMessage] = useState('')
   const { user } = useContext(UserContext)
   const messageBox = React.createRef()
+  const navigate = useNavigate();
+
 
   const [users, setUsers] = useState([])
+  const [projectUsers, setProjectUsers] = useState([]);
   const [messages, setMessages] = useState([])
   const [fileTree, setFileTree] = useState({})
 
@@ -90,6 +95,69 @@ const Project = () => {
     setMessage('')
   }
 
+  const deleteUserFromProject = (userId, projectId) => {
+    const confirmed = window.confirm('Do you really want to delete this user?');
+    console.log(confirmed)
+    console.log(user)
+    if (confirmed) {
+      if (project.users.length == 1) {
+        const secondConfirmation = window.confirm("project will be deleted");
+        if (secondConfirmation) {
+          axios
+            .delete(`/api/project/delete-user/${userId}/${projectId}/${user._id}`)
+            .then((res) => {
+              console.log("User deleted successfully:", res.data);
+              // Update local stat
+              setProjectUsers((prevUsers) =>
+                prevUsers.filter((user) => user._id !== userId)
+              );
+
+              if (res.data.data.users.length === 0) {
+                axios
+                  .delete(`/api/project/delete-project/${projectId}`)
+                  .then(() => {
+                    console.log("Project deleted as no users remain.");
+                    setProject(null);
+                    navigate('/');
+
+                    if (window.socket) {
+                      window.socket.emit('leave-project-room', projectId);
+                    }
+                  })
+                  .catch((err) => {
+                    console.error("Error deleting project:", err);
+                  });
+              }
+            })
+            .catch((err) => {
+              alert("Only admin can delete the user");
+              console.error("Error deleting user:", err);
+            });
+        }
+      }
+      else {
+        axios
+          .delete(`/api/project/delete-user/${userId}/${projectId}/${user._id}`)
+          .then((res) => {
+            console.log("User deleted successfully:", res.data);
+
+            // Update local stat
+            setProjectUsers((prevUsers) =>
+              prevUsers.filter((user) => user._id !== userId)
+            );
+          })
+          .catch((err) => {
+            alert("Only admin can delete the user");
+            console.error("Error deleting user:", err);
+          });
+      }
+    } else {
+      console.log("User cancelled delete");
+    }
+  };
+
+
+
 
 
   function WriteAiMessage(message) {
@@ -111,6 +179,8 @@ const Project = () => {
       </div>)
   }
 
+
+
   useEffect(() => {
 
     initializeSocket(project._id)
@@ -125,7 +195,6 @@ const Project = () => {
 
     receiveMessage('project-message', data => {
 
-      // console.log(data)
 
       if (data.sender._id == 'ai') {
 
@@ -137,21 +206,22 @@ const Project = () => {
         if (message.fileTree) {
           setFileTree(message.fileTree || {})
         }
-        setMessages(prevMessages => [...prevMessages, data]) // Update messages state
+        setMessages(prevMessages => [...prevMessages, data])
       } else {
 
 
-        setMessages(prevMessages => [...prevMessages, data]) // Update messages state
+        setMessages(prevMessages => [...prevMessages, data])
       }
     })
 
     axios
       .get(`/api/project/get-project/${location.state.project._id}`)
       .then((res) => {
-        console.log(res.data.data)
 
         const projectData = res.data.data;
         setProject(projectData);
+        // console.log("project data",projectData)
+        setProjectUsers(projectData.users)
         setFileTree(projectData.fileTree || {});
       })
       .catch((err) => {
@@ -161,7 +231,7 @@ const Project = () => {
     axios
       .get('/api/auth/get-all-users')
       .then((res) => {
-        console.log(res.data.data)
+        // console.log("ye user hair",res.data.data)
         setUsers(res.data.data)
       })
       .catch((err) => {
@@ -181,24 +251,66 @@ const Project = () => {
     })
   }
 
+ const leaveProject = function (projectId) {
+  const confirmed = window.confirm("Are you sure you want to leave the project?");
+  if (!confirmed) return;
+
+  axios
+    .get(`/api/project/leave-project/${projectId}`)
+    .then((res) => {
+      const usersLeft = res.data.data.users.length;
+
+      if (usersLeft === 0) {
+        axios
+          .delete(`/api/project/delete-project/${projectId}`)
+          .then(() => {
+            console.log("Project deleted as no users remain.");
+            setProject(null);
+            navigate('/');
+
+            if (window.socket) {
+              window.socket.emit('leave-project-room', projectId);
+            }
+          })
+          .catch((err) => {
+            console.error("Error deleting project:", err);
+          });
+      } else {
+        setProject(res.data.data); // optional: update UI
+        navigate('/');
+      }
+    })
+    .catch((err) => {
+      console.error("Can't leave the group", err);
+      alert("Only valid project members can leave.");
+    });
+};
+
+
+
+
 
   return (
     <main className="h-screen w-screen flex bg-[#0e0e10]">
+
       <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300  ">
         <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
-          <button
-            className="flex gap-2"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <i className="ri-add-fill mr-1"></i>
-            <p>Add collaborator</p>
-          </button>
-          <button
-            onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-            className="p-2"
-          >
-            <i className="ri-group-fill"></i>
-          </button>
+          <h1 className='capitalize text-2xl'>{project.name}</h1>
+          <div className='flex justify-center items-center gap-4'>
+            <button
+              className="flex "
+              onClick={() => setIsModalOpen(true)}
+            >
+              <i className="ri-add-fill mr-1"></i>
+              <p>Add collaborator</p>
+            </button>
+            <button
+              onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+              className="p-2"
+            >
+              <i className="ri-group-fill"></i>
+            </button>
+          </div>
         </header>
         <div className="conversation-area pt-14 pb-10 bg-[#0e0e10] flex-grow flex flex-col h-full relative">
 
@@ -249,10 +361,10 @@ const Project = () => {
           </div>
         </div>
         <div
-          className={`sidePanel w-full h-full flex flex-col gap-2 bg-slate-50 absolute transition-all ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`sidePanel w-full h-full flex flex-col z-10000 gap-2 bg-[#0e0e10] text-white absolute transition-all ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'
             } top-0`}
         >
-          <header className="flex justify-between items-center px-4 p-2 bg-slate-200">
+          <header className="flex justify-between items-center px-4 p-2 ">
             <h1 className="font-semibold text-lg">
               Collaborators
             </h1>
@@ -264,21 +376,44 @@ const Project = () => {
               <i className="ri-close-fill"></i>
             </button>
           </header>
-          <div className="users flex flex-col gap-2">
-            {project.users &&
-              project.users.map((user) => {
+          
+          <div className='flex items-center ml-4 text-red-900 gap-2'>
+            <button onClick={()=>{
+              leaveProject(project._id)
+            }} className='flex items-center ml-4 text-red-900 gap-2'>
+              <i class="ri-picture-in-picture-exit-line"></i>
+             <h1>leave the project</h1>
+            </button>
+          </div>
+
+          <div className="users flex flex-col gap-2 ">
+            {projectUsers &&
+              projectUsers.map((user) => {
                 return (
-                  <div className="user cursor-pointer hover:bg-slate-200 p-2 flex gap-2 items-center">
-                    <div className="aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">
-                      <i className="ri-user-fill absolute"></i>
+                  <div className="group p-[2px] rounded-md bg-transparent hover:bg-gradient-to-r from-purple-400 to-blue-400 transition-all duration-300">
+                    <div className="flex gap-2 items-center p-2 rounded-md bg-[#0e0e10]">
+                      <div className="aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">
+                        <i className="ri-user-fill absolute"></i>
+                      </div>
+                      <div className="flex w-full justify-between items-center">
+                        <div className='flex flex-col justify-center'>
+                          <h1 className="font-semibold text-lg">{user.userName}</h1>
+                        {project.admin === user._id && (
+                          <h1 className="text-sm font-medium text-green-500">Leader</h1>
+                        )}
+                        </div>
+                        <button onClick={() => deleteUserFromProject(user._id, project._id)}>
+                          <i className="ri-delete-bin-line text-red-900"></i>
+                        </button>
+
+                      </div>
                     </div>
-                    <h1 className="font-semibold text-lg">
-                      {user.userName}
-                    </h1>
                   </div>
+
                 )
               })}
           </div>
+
         </div>
       </section>
 
@@ -437,14 +572,14 @@ const Project = () => {
                 >
                   <div
                     className={`p-[2px] rounded-xl transition ${Array.from(selectedUserId).includes(user._id)
-                        ? 'bg-gradient-to-r from-purple-400 to-blue-400'
-                        : 'hover:bg-gradient-to-r from-purple-400 to-blue-400'
+                      ? 'bg-gradient-to-r from-purple-400 to-blue-400'
+                      : 'hover:bg-gradient-to-r from-purple-400 to-blue-400'
                       }`}
                   >
                     <div
                       className={`rounded-xl p-2 flex gap-2 items-center ${Array.from(selectedUserId).includes(user._id)
-                          ? 'bg-[#1a1a1a]'
-                          : 'bg-[#1a1a1a]'
+                        ? 'bg-[#1a1a1a]'
+                        : 'bg-[#1a1a1a]'
                         }`}
                     >
                       <div className="aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">

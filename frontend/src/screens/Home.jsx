@@ -40,6 +40,7 @@ const Home = () => {
     useEffect(() => {
         axios.get('/api/project/get-all-projects')
             .then((res) => {
+                console.log("project",res.data.data);
                 setProject(res.data.data)
             }).catch(err => {
                 console.log(err)
@@ -65,9 +66,9 @@ const Home = () => {
     return (
         <main className="min-h-screen bg-[#0e0e10] text-white px-8 py-12">
             <header className="flex items-center justify-between mb-12">
-                <div className="flex items-center gap-2">
-                    <img src="/logo.png" alt="CodevAi Logo" className="w-8 h-8" />
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">CodevAi</h1>
+                <div className="flex items-center justify-center ">
+                    <img src="/public/logo1_gradient.png" alt="CodevAi Logo" className="w-[10vh] h-[10vh]" />
+                    <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">CodevAi</h1>
                 </div>
                 <nav className="flex gap-4">
                     <button onClick={() => setActiveModal('about')} className="border-gradient  text-white font-medium transition hover:scale-105">About</button>
@@ -79,7 +80,7 @@ const Home = () => {
             </header>
 
             <div className='m-12 mt-30'>
-                <section className="flex flex-col md:flex-row items-center justify-between gap-10 ">
+                <section className="flex flex-col h-[50vh] md:flex-row items-center justify-between gap-10 ">
                     <div className="max-w-xl">
                         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text mb-4">
                             Revolutionize the Way You Code, Together.
@@ -95,7 +96,7 @@ const Home = () => {
                         </button>
                     </div>
 
-                    <div className='right flex flex-col justify-center items-center gap-8'> 
+                    <div className='right flex flex-col h-full justify-start items-center gap-8'> 
                         <button
                             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full text-white font-semibold hover:scale-105 transition-transform "
                         >
