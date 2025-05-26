@@ -28,7 +28,7 @@ const UserAuth = ({ children }) => {
     }, [])
 
     if (loading) {
-        return <div>Loading...</div>
+        return null
     }
 
 

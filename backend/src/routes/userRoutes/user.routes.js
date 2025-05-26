@@ -17,4 +17,6 @@ router.get('/current-user',authMiddleware,userController.currentUser);
 router.get('/logout',authMiddleware,userController.userLogout)
 router.get('/get-all-users',authMiddleware,userController.getAllUsers)
 
+router.get('/validate', userController.validateUser);
+
 module.exports = router;

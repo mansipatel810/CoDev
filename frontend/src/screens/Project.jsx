@@ -251,40 +251,40 @@ const Project = () => {
     })
   }
 
- const leaveProject = function (projectId) {
-  const confirmed = window.confirm("Are you sure you want to leave the project?");
-  if (!confirmed) return;
+  const leaveProject = function (projectId) {
+    const confirmed = window.confirm("Are you sure you want to leave the project?");
+    if (!confirmed) return;
 
-  axios
-    .get(`/api/project/leave-project/${projectId}`)
-    .then((res) => {
-      const usersLeft = res.data.data.users.length;
+    axios
+      .get(`/api/project/leave-project/${projectId}`)
+      .then((res) => {
+        const usersLeft = res.data.data.users.length;
 
-      if (usersLeft === 0) {
-        axios
-          .delete(`/api/project/delete-project/${projectId}`)
-          .then(() => {
-            console.log("Project deleted as no users remain.");
-            setProject(null);
-            navigate('/');
+        if (usersLeft === 0) {
+          axios
+            .delete(`/api/project/delete-project/${projectId}`)
+            .then(() => {
+              console.log("Project deleted as no users remain.");
+              setProject(null);
+              navigate('/');
 
-            if (window.socket) {
-              window.socket.emit('leave-project-room', projectId);
-            }
-          })
-          .catch((err) => {
-            console.error("Error deleting project:", err);
-          });
-      } else {
-        setProject(res.data.data); // optional: update UI
-        navigate('/');
-      }
-    })
-    .catch((err) => {
-      console.error("Can't leave the group", err);
-      alert("Only valid project members can leave.");
-    });
-};
+              if (window.socket) {
+                window.socket.emit('leave-project-room', projectId);
+              }
+            })
+            .catch((err) => {
+              console.error("Error deleting project:", err);
+            });
+        } else {
+          setProject(res.data.data); // optional: update UI
+          navigate('/');
+        }
+      })
+      .catch((err) => {
+        console.error("Can't leave the group", err);
+        alert("Only valid project members can leave.");
+      });
+  };
 
 
 
@@ -297,28 +297,48 @@ const Project = () => {
         <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
           <h1 className='capitalize text-2xl'>{project.name}</h1>
           <div className='flex justify-center items-center gap-4'>
+
             <button
-              className="flex "
+              className="relative flex items-center group"
               onClick={() => setIsModalOpen(true)}
             >
-              <i className="ri-add-fill mr-1"></i>
-              <p>Add collaborator</p>
+              <i className="ri-add-fill text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400"></i>
+
+              <span
+                className="absolute  top-8  -translate-x-1/2 whitespace-nowrap
+      rounded bg-black px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100
+      pointer-events-none transition-opacity duration-300 select-none"
+              >
+                Add Collaborators
+              </span>
             </button>
+
             <button
               onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-              className="p-2"
+              className="relative group p-2"
             >
-              <i className="ri-group-fill"></i>
+              <i className="ri-group-fill text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400"></i>
+
+              <span
+                className="absolute top-8 left-1/2  -translate-x-1/2 whitespace-nowrap
+      rounded bg-black px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100
+      pointer-events-none transition-opacity duration-300 select-none"
+              >
+                Collaborators
+              </span>
             </button>
+
           </div>
         </header>
-        <div className="conversation-area pt-14 pb-10 bg-[#0e0e10] flex-grow flex flex-col h-full relative">
 
+        <div className="conversation-area pt-14 pb-10 bg-[#0e0e10] flex-grow flex flex-col w-full h-full relative">
           <div
-            className="relative w-[95%] h-[95%] mx-auto my-auto rounded-xl"
+            className="relative w-[95%] h-[97%] mx-auto  rounded-xl"
             style={{
-              backgroundImage: "url('/public/robot.png')",
-              backgroundSize: 'cover', backgroundPosition: 'center'
+              backgroundImage: "url('/public/logo1_gradient.png')",
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '50vh',
+              backgroundPosition: 'center'
             }}
           >
             <div
@@ -330,7 +350,7 @@ const Project = () => {
                 <div
                   key={index}
                   className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} 
-                    ${msg.sender._id == user._id.toString() ? 'ml-auto' : ''} 
+                    ${msg.sender._id == user._id ? 'ml-auto' : ''} 
                     message flex flex-col p-2 bg-[#0e0e10] text-white w-fit rounded-md`}
                 >
                   <small className='opacity-65 text-xs'>{msg.sender.userName}</small>
@@ -344,7 +364,7 @@ const Project = () => {
 
 
 
-          <div className="inputField w-full flex absolute bg-[#0e0e10] bottom-0 mb-1">
+          <div className="inputField w-full flex absolute bg-[#0e0e10] bottom-0 mb-2">
             <input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -376,13 +396,13 @@ const Project = () => {
               <i className="ri-close-fill"></i>
             </button>
           </header>
-          
+
           <div className='flex items-center ml-4 text-red-900 gap-2'>
-            <button onClick={()=>{
+            <button onClick={() => {
               leaveProject(project._id)
             }} className='flex items-center ml-4 text-red-900 gap-2'>
               <i class="ri-picture-in-picture-exit-line"></i>
-             <h1>leave the project</h1>
+              <h1>leave the project</h1>
             </button>
           </div>
 
@@ -398,9 +418,9 @@ const Project = () => {
                       <div className="flex w-full justify-between items-center">
                         <div className='flex flex-col justify-center'>
                           <h1 className="font-semibold text-lg">{user.userName}</h1>
-                        {project.admin === user._id && (
-                          <h1 className="text-sm font-medium text-green-500">Leader</h1>
-                        )}
+                          {project.admin === user._id && (
+                            <h1 className="text-sm font-medium text-green-500">Leader</h1>
+                          )}
                         </div>
                         <button onClick={() => deleteUserFromProject(user._id, project._id)}>
                           <i className="ri-delete-bin-line text-red-900"></i>
@@ -490,7 +510,7 @@ const Project = () => {
                 }}
                 className='run p-2 px-4 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl m-2 text-white'
               >
-                run
+              Run
               </button>
 
 

@@ -3,6 +3,8 @@ import { UserContext } from '../context/user.context'
 import axios from "../config/axios"
 import { useNavigate } from 'react-router-dom'
 
+const svgBackground = `url("data:image/svg+xml,%3Csvg%20width='1512'%20height='6397'%20viewBox='0%200%201512%206397'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient%20id='grad1'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0%25'%20stop-color='%23c084fc'/%3E%3Cstop%20offset='100%25'%20stop-color='%2360a5fa'/%3E%3C/linearGradient%3E%3Cfilter%20id='filter0_f_243_2'%20x='239.258'%20y='-551.062'%20width='1028.33'%20height='917.31'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3E%3CfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3E%3CfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3E%3CfeGaussianBlur%20stdDeviation='72'%20result='effect1_foregroundBlur_243_2'/%3E%3C/filter%3E%3Cfilter%20id='filter1_f_243_2'%20x='-774'%20y='2387'%20width='1578'%20height='1578'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3E%3CfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3E%3CfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3E%3CfeGaussianBlur%20stdDeviation='302'%20result='effect1_foregroundBlur_243_2'/%3E%3C/filter%3E%3Cfilter%20id='filter2_f_243_2'%20x='967'%20y='532'%20width='616'%20height='616'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3E%3CfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3E%3CfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3E%3CfeGaussianBlur%20stdDeviation='122'%20result='effect1_foregroundBlur_243_2'/%3E%3C/filter%3E%3CclipPath%20id='clip0_243_2'%3E%3Crect%20width='1512'%20height='6397'%20fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20clip-path='url(%23clip0_243_2)'%3E%3Crect%20width='1512'%20height='6397'%20fill='%230c0c0c'/%3E%3Cg%20opacity='0.4'%20filter='url(%23filter0_f_243_2)'%3E%3Cpath%20d='M387.38%20137.553C355.297%20-107.774%20513.625%20-371.892%20752.935%20-403.188C992.246%20-434.485%201087.35%20-273.117%201119.44%20-27.7906C1151.52%20217.536%20993.208%20-36.6224%20796.88%20-10.947C557.569%2020.3495%20419.463%20382.88%20387.38%20137.553Z'%20fill='url(%23grad1)'/%3E%3C/g%3E%3Cg%20filter='url(%23filter1_f_243_2)'%3E%3Ccircle%20cx='15'%20cy='3176'%20r='185'%20fill='url(%23grad1)'/%3E%3C/g%3E%3Cg%20filter='url(%23filter2_f_243_2)'%3E%3Ccircle%20cx='1275'%20cy='840'%20r='64'%20fill='url(%23grad1)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`;
+
 const Home = () => {
     const { user,setUser } = useContext(UserContext)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -63,11 +65,19 @@ const Home = () => {
 }
 
 
+
     return (
-        <main className="min-h-screen bg-[#0e0e10] text-white px-8 py-12">
-            <header className="flex items-center justify-between mb-12">
+        <main className="min-h-screen bg-[#0e0e10] text-white px-8 py-6 " 
+        style={{
+      backgroundImage: svgBackground,
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover',
+    //   backgroundPosition: 'center',
+    }}
+        >
+            <header className="flex items-center justify-between ">
                 <div className="flex items-center justify-center ">
-                    <img src="/public/logo1_gradient.png" alt="CodevAi Logo" className="w-[10vh] h-[10vh]" />
+                    <img src="/logo1_gradient.png" alt="CodevAi Logo" className="w-[10vh] h-[10vh]" />
                     <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">CodevAi</h1>
                 </div>
                 <nav className="flex gap-4">
@@ -82,15 +92,15 @@ const Home = () => {
             <div className='m-12 mt-30'>
                 <section className="flex flex-col h-[50vh] md:flex-row items-center justify-between gap-10 ">
                     <div className="max-w-xl">
-                        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text mb-4">
+                        <h1 className="text-3xl md:text-5xl font-[Helvetica,Arial,sans-serif]  font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text mb-4">
                             Revolutionize the Way You Code, Together.
                         </h1>
-                        <p className="text-gray-400 text-lg mb-6">
+                        <p className="text-gray-400 text-lg ">
                             CoDev AI combines the power of real-time collaboration with intelligent code assistance to help teams build faster, better, and smarter. Collaborate with your teammates, receive instant AI-powered code suggestions, and see your changes reflected live. It's more than coding — it’s a co-creation experience for modern developers.
                         </p>
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full text-white font-semibold hover:scale-105 transition-transform mt-10"
+                            className="px-6 py-3  bg-gradient-to-r from-purple-500 to-blue-500 rounded-full text-white font-semibold hover:scale-105 transition-transform mt-10"
                         >
                             + Create New Project
                         </button>

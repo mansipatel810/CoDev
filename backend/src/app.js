@@ -17,10 +17,10 @@ app.use(morgan('tiny'));
 app.use(cookieParser()); 
 app.use(cors({
   origin: 'http://localhost:5173',
-  credentials: true, // <-- important to allow cookies
+  credentials: true, 
 }));
 app.use(session({
-  secret: 'your_secret_key', // change this to a strong secret in production
+  secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false,
   cookie: {

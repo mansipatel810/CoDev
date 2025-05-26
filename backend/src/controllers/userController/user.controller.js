@@ -2,7 +2,7 @@ const userModel = require('../../models/userModel/user.model');
 const { validationResult } = require('express-validator');
 const customError = require('../../utils/customError.js');
 const cacheClient = require('../../services/cacheService/cache.service .js')
-
+const jwt = require('jsonwebtoken');
 
 const userRegister = async (req, res, next) => {
     try {
@@ -131,10 +131,27 @@ const getAllUsers = async (req, res, next) => {
     }
 }
 
+const validateUser = async (req, res)=>{
+  const token = req.cookies.token;
+  console.log("validate token", token)
+  if (!token) return res.status(401).json({ error: "No token" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded", decoded)
+    res.json({ user: { id: decoded.id, email: decoded.email } });
+  } catch (err) {
+    console.log("Invalid token", err);
+    return res.status(403).json({ error: "Invalid token" });
+  }
+}
+
+
 module.exports = {
     userRegister,
     userLogin,
     currentUser,
     userLogout,
-    getAllUsers
+    getAllUsers,
+    validateUser
 }
