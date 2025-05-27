@@ -72,6 +72,10 @@ const Home = () => {
       backgroundImage: svgBackground,
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'cover',
+    // backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
+    backgroundRepeat: 'no-repeat',
+    // backgroundSize: ' 200v 1000vh',
     //   backgroundPosition: 'center',
     }}
         >

@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
               email: 'AI',
               userName: 'AI',
           }
-      });
+      }); 
 
       return;
   }

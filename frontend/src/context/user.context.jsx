@@ -3,8 +3,8 @@ import React, { createContext, useState, useEffect } from "react";
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // initially null
-  const [loading, setLoading] = useState(true); // helps avoid flicker
+  const [user, setUser] = useState(null); 
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     // check for valid cookie token on first load
@@ -20,7 +20,7 @@ export const UserProvider = ({ children }) => {
         }
 
         const data = await res.json();
-        setUser(data.user); 
+        setUser(data.data); 
       } catch (err) {
         console.log("Not authenticated");
         setUser(null);

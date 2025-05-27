@@ -81,7 +81,7 @@ const Project = () => {
   }
 
   const send = () => {
-    // console.log({sender:user,message})
+    console.log("sender hai ye", user)
 
     sendMessage('project-message', {
       message,
@@ -295,7 +295,7 @@ const Project = () => {
 
       <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300  ">
         <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
-          <h1 className='capitalize text-2xl'>{project.name}</h1>
+          <h1 className='capitalize text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400'>{project.name}</h1>
           <div className='flex justify-center items-center gap-4'>
 
             <button
@@ -346,19 +346,30 @@ const Project = () => {
               className="message-box flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide
                bg-white/10 backdrop-blur-md border border-white/30 rounded-xl shadow-lg pt-2 m-4 w-full h-full mx-auto my-auto"
             >
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} 
-                    ${msg.sender._id == user._id ? 'ml-auto' : ''} 
-                    message flex flex-col p-2 bg-[#0e0e10] text-white w-fit rounded-md`}
-                >
-                  <small className='opacity-65 text-xs'>{msg.sender.userName}</small>
-                  <div className='text-sm'>
-                    {msg.sender._id === 'ai' ? WriteAiMessage(msg.message) : <p>{msg.message}</p>}
-                  </div>
+
+              {messages.map((msg, index) => {
+                // console.log(msg)
+                // console.log(user)
+                const senderId = msg.sender?.email;
+                const currentUserId = user?.email;
+                // console.log('Rendering message:', { senderId, currentUserId, message: msg.message });
+
+                const isCurrentUser = senderId === currentUserId;
+
+                return (
+                  <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${msg.sender._id == user._id.toString() && 'ml-auto'}  message flex flex-col text-white p-2 bg-[#0e0e10] w-fit rounded-md`}>
+                <small className='opacity-65 text-xs'>{msg.sender.userName==user.userName? <span></span> : <span>{msg.sender.userName}</span>}</small>
+                <div className='text-sm'>
+                  {msg.sender._id === 'ai' ?
+                    WriteAiMessage(msg.message)
+                    : <p>{msg.message}</p>}
                 </div>
-              ))}
+              </div>
+                );
+              })}
+
+
+
             </div>
           </div>
 
@@ -370,6 +381,9 @@ const Project = () => {
               onChange={(e) => setMessage(e.target.value)}
               className="p-2 px-4 text-white bg-[#2B2B30]  ml-4 mr-1 rounded-xl  outline-none flex-grow"
               type="text"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") send();
+              }}
               placeholder="Enter message"
             />
             <button
@@ -438,7 +452,49 @@ const Project = () => {
       </section>
 
       <section className="right  bg-#2B2B30 flex-grow h-full flex border-2 border-zinc-500">
+
         <div className="explorer h-full max-w-64 min-w-52 bg-[#474B53] border-r-2 border-zinc-500 ">
+          <div className="flex items-center p-2 bg-[#0e0e10] ">
+            <div className="flex items-center justify-between w-full">
+              <h1 className="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Explorer</h1>
+              <button onClick={() => {
+                const newFileName = prompt("Enter new file name:");
+                if (newFileName) {
+                  let updatedFileTree = {
+                    ...fileTree,
+                    [newFileName]: {
+                      file: {
+                        contents: ""
+                      }
+                    }
+                  };
+                  // If package.json doesn't exist, create a default one
+                  if (!updatedFileTree["package.json"]) {
+                    updatedFileTree["package.json"] = {
+                      file: {
+                        contents: JSON.stringify({
+                          name: "my-app",
+                          version: "1.0.0",
+                          main: newFileName=="index.js" ? "index.js" : newFileName,
+                          scripts: {
+                            start: "node " + (newFileName=="index.js" ? "index.js" : newFileName)
+                          },
+                          dependencies: {
+                            express: "^4.18.2"
+                          }
+                        }, null, 2)
+                      }
+                    };
+                  }
+                  setFileTree(updatedFileTree);
+                  // abhi ke liye htaya , saveFileTree(updatedFileTree);
+                }
+              }}>
+                <i className="ri-file-add-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
+
+              </button>
+            </div>
+          </div>
           <div className="file-tree w-full flex flex-col gap-[2px] mt-1">
             {Object.keys(fileTree).map((file, index) => (
               <button
@@ -510,7 +566,7 @@ const Project = () => {
                 }}
                 className='run p-2 px-4 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl m-2 text-white'
               >
-              Run
+                Run
               </button>
 
 

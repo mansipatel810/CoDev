@@ -139,7 +139,15 @@ const validateUser = async (req, res)=>{
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("decoded", decoded)
-    res.json({ user: { id: decoded.id, email: decoded.email } });
+    const user = await userModel.findOne({ email: decoded.email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    console.log("user", user)
+    res.json({
+      success: true,
+      data:user
+    });
   } catch (err) {
     console.log("Invalid token", err);
     return res.status(403).json({ error: "Invalid token" });
