@@ -7,7 +7,7 @@ import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
 import { getWebContainer } from '../config/webContainer'
 import { useNavigate } from "react-router-dom";
-
+import expressStaticTemplate from '../utils/expressStaticTemplate';
 
 
 
@@ -468,16 +468,39 @@ const Project = () => {
                       }
                     }
                   };
-                  // If package.json doesn't exist, create a default one
-                  if (!updatedFileTree["package.json"]) {
+
+                  // If the new file is an HTML file, add/update server.js and package.json
+                  if (newFileName.endsWith('.html')) {
+                    updatedFileTree["server.js"] = {
+                      file: {
+                        contents: expressStaticTemplate(newFileName)
+                      }
+                    };
                     updatedFileTree["package.json"] = {
                       file: {
                         contents: JSON.stringify({
                           name: "my-app",
                           version: "1.0.0",
-                          main: newFileName=="index.js" ? "index.js" : newFileName,
+                          main: "server.js",
                           scripts: {
-                            start: "node " + (newFileName=="index.js" ? "index.js" : newFileName)
+                            start: "node server.js"
+                          },
+                          dependencies: {
+                            express: "^4.18.2"
+                          }
+                        }, null, 2)
+                      }
+                    };
+                  } else if (!updatedFileTree["package.json"]) {
+                    // fallback for non-html files
+                    updatedFileTree["package.json"] = {
+                      file: {
+                        contents: JSON.stringify({
+                          name: "my-app",
+                          version: "1.0.0",
+                          main: newFileName,
+                          scripts: {
+                            start: "node " + newFileName
                           },
                           dependencies: {
                             express: "^4.18.2"
@@ -486,8 +509,9 @@ const Project = () => {
                       }
                     };
                   }
+
                   setFileTree(updatedFileTree);
-                  // abhi ke liye htaya , saveFileTree(updatedFileTree);
+                  // Optionally save to backend: saveFileTree(updatedFileTree);
                 }
               }}>
                 <i className="ri-file-add-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
@@ -521,10 +545,11 @@ const Project = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentFile(file)}
-                    className={`open-file cursor-pointer p-2 px-4  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
+                    className={`open-file cursor-pointer p-2 px-2 text  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
                     <p
                       className='font-semibold text-lg'
                     >{file}</p>
+                    <i class="ri-file-close-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-xl "></i>
                   </button>
                 ))
               }
