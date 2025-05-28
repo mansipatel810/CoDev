@@ -179,7 +179,7 @@ const Project = () => {
       </div>)
   }
 
-
+  
 
   useEffect(() => {
 
@@ -241,7 +241,7 @@ const Project = () => {
 
 
   function saveFileTree(ft) {
-    axios.put('/api/project/update-file-tree', {
+    axios.put('api/project/update-file-tree', {
       projectId: project._id,
       fileTree: ft
     }).then(res => {
@@ -289,6 +289,102 @@ const Project = () => {
 
 
 
+
+  function FileTree({ tree, parentPath = "" }) {
+    const [openFolders, setOpenFolders] = useState({});
+
+    const toggleFolder = (folder) => {
+      setOpenFolders((prev) => ({
+        ...prev,
+        [folder]: !prev[folder],
+      }));
+    };
+
+    return (
+      <div className="flex flex-col gap-[2px]">
+        {Object.keys(tree).map((key, idx) => {
+          const node = tree[key];
+          if (!node) return null; // <-- Skip undefined nodes!
+          const isFile = node?.file && typeof node.file.contents === "string";
+          const isFolder = !isFile && typeof node === "object";
+          const fullPath = parentPath ? `${parentPath}/${key}` : key;
+
+          return (
+            <div key={fullPath}>
+              <div
+                className="tree-element cursor-pointer p-2 px-4 flex justify-between items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
+                onClick={() => {
+                  if (isFile) {
+                    setCurrentFile(fullPath);
+                    setOpenFiles((prev) => [...new Set([...prev, fullPath])]);
+                  } else if (isFolder) {
+                    toggleFolder(fullPath);
+                  }
+                }}
+              >
+                <p className="font-semibold text-lg flex items-center">
+                  {key}
+                  <span style={{ marginLeft: 8 }}>
+                    {isFile ? (
+                      <i className="ri-file-line" />
+                    ) : (
+                      <i
+                        className={`ri-folder-${openFolders[fullPath] ? "open" : "line"}`}
+                      />
+                    )}
+                  </span>
+                </p>
+                <i
+                  className="ri-delete-bin-line text-red-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const updatedTree = { ...tree };
+                    delete updatedTree[key];
+                    setFileTree((prev) => {
+                      setOpenFiles((files) =>
+                        files.filter((f) => !f.startsWith(fullPath))
+                      );
+                      if (currentFile && currentFile.startsWith(fullPath)) {
+                        setCurrentFile(null);
+                      }
+                      // Remove the key from the parent node immutably
+                      const parts = fullPath.split('/');
+                      const newTree = { ...prev };
+                      let node = newTree;
+                      for (let i = 0; i < parts.length - 1; i++) {
+                        node[parts[i]] = { ...node[parts[i]] };
+                        node = node[parts[i]];
+                      }
+                      delete node[parts[parts.length - 1]];
+                      return newTree;
+                    });
+                    saveFileTree(updatedTree);
+                  }}
+                  style={{ cursor: "pointer" }}
+                ></i>
+              </div>
+              {isFolder && openFolders[fullPath] && (
+                <div className="ml-4">
+                  <FileTree tree={node} parentPath={fullPath} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  function getFileByPath(tree, path) {
+  if (!path) return null; // <-- Prevents error when currentFile is null/undefined
+  const parts = path.split('/');
+  let node = tree;
+  for (let part of parts) {
+    if (!node[part]) return null;
+    node = node[part];
+  }
+  return node;
+}
 
   return (
     <main className="h-screen w-screen flex bg-[#0e0e10]">
@@ -511,7 +607,7 @@ const Project = () => {
                   }
 
                   setFileTree(updatedFileTree);
-                  // Optionally save to backend: saveFileTree(updatedFileTree);
+                  saveFileTree(updatedFileTree);
                 }
               }}>
                 <i className="ri-file-add-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
@@ -520,20 +616,7 @@ const Project = () => {
             </div>
           </div>
           <div className="file-tree w-full flex flex-col gap-[2px] mt-1">
-            {Object.keys(fileTree).map((file, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentFile(file)
-                  setOpenFiles([
-                    ...new Set([...openFiles, file]),
-                  ])
-                }}
-                className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
-              >
-                <p className="font-semibold text-lg">{file}</p>
-              </button>
-            ))}
+            <FileTree tree={fileTree} />
           </div>
         </div>
 
@@ -545,11 +628,25 @@ const Project = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentFile(file)}
-                    className={`open-file cursor-pointer p-2 px-2 text  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
+                    className={`open-file cursor-pointer p-2 px-2 text-xl  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
                     <p
                       className='font-semibold text-lg'
                     >{file}</p>
-                    <i class="ri-file-close-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-xl "></i>
+                    <i
+                      className="ri-close-line text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-xl"
+                      onClick={e => {
+                        e.stopPropagation(); // Prevent tab switch
+                        setOpenFiles(prev => {
+                          const updated = prev.filter(f => f !== file);
+                          // If the closed file is the current file, switch to another open file or null
+                          if (currentFile === file) {
+                            setCurrentFile(updated.length > 0 ? updated[updated.length - 1] : null);
+                          }
+                          return updated;
+                        });
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    ></i>
                   </button>
                 ))
               }
@@ -601,37 +698,44 @@ const Project = () => {
 
           <div className="bottom flex flex-grow max-w-full shrink  overflow-auto">
             {
-              fileTree[currentFile] && (
-                <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
-                  <pre
-                    className="hljs h-full">
-                    <code
-                      className="hljs h-full outline-none"
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => {
-                        const updatedContent = e.target.innerText;
-                        const ft = {
-                          ...fileTree,
-                          [currentFile]: {
-                            file: {
-                              contents: updatedContent
-                            }
+              (() => {
+                const fileNode = getFileByPath(fileTree, currentFile);
+                return fileNode?.file?.contents !== undefined && (
+                  <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
+                    <pre className="hljs h-full">
+                      <code
+                        className="hljs h-full outline-none"
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const updatedContent = e.target.innerText;
+                          // Update nested fileTree immutably
+                          const parts = currentFile.split('/');
+                          const newTree = { ...fileTree };
+                          let node = newTree;
+                          for (let i = 0; i < parts.length - 1; i++) {
+                            node[parts[i]] = { ...node[parts[i]] };
+                            node = node[parts[i]];
                           }
-                        }
-                        setFileTree(ft)
-                        saveFileTree(ft)
-                      }}
-                      dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[currentFile].file.contents).value }}
-                      style={{
-                        whiteSpace: 'pre-wrap',
-                        paddingBottom: '25rem',
-                        counterSet: 'line-numbering',
-                      }}
-                    />
-                  </pre>
-                </div>
-              )
+                          node[parts[parts.length - 1]] = {
+                            file: { contents: updatedContent }
+                          };
+                          setFileTree(newTree);
+                          saveFileTree(newTree);
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html: hljs.highlight('javascript', fileNode.file.contents).value
+                        }}
+                        style={{
+                          whiteSpace: 'pre-wrap',
+                          paddingBottom: '25rem',
+                          counterSet: 'line-numbering',
+                        }}
+                      />
+                    </pre>
+                  </div>
+                );
+              })()
             }
           </div>
 

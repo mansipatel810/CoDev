@@ -34,7 +34,7 @@ router.delete('/delete-user/:userId/:projectId/:adminId',
     projectController.deleteUserFromProject
 );
 
-router.put('update-file-tree',
+router.put('/update-file-tree',
     authMiddleware,
     body('projectId').isString().withMessage('Project ID is required'),
     body('fileTree').isObject().withMessage('File tree must be an object'),
@@ -54,5 +54,7 @@ router.get(
     param('projectId').isString().withMessage('Project ID is required'),
     projectController.leaveProject
 )
+
+
  
 module.exports = router;

@@ -168,6 +168,7 @@ const deleteUserFromProject = async (req, res, next) => {
 
 const updateFileTree = async (req, res, next) => {
     const errors = validationResult(req);
+    console.log(errors)
     if (!errors.isEmpty()) {
         return res.status(400).json({ error: errors.array() });
     }
@@ -184,7 +185,7 @@ const updateFileTree = async (req, res, next) => {
             throw new Error("fileTree is required")
         }
 
-        const project = await projectModel.findOneAndUpdate({
+        const project = await Project.findOneAndUpdate({
             _id: projectId
         }, {
             fileTree
@@ -202,6 +203,7 @@ const updateFileTree = async (req, res, next) => {
         })
 
     } catch (error) {
+        console.error("Error updating file tree:", error);
         res.status(500).json({
             success: false,
             message: error.message || "Internal Server Error"
