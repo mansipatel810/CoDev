@@ -8,7 +8,7 @@ import hljs from 'highlight.js';
 import { getWebContainer } from '../config/webContainer'
 import { useNavigate } from "react-router-dom";
 import expressStaticTemplate from '../utils/expressStaticTemplate';
-
+import { getFileIcon, getFolderIcon } from '../utils/functions';
 
 
 function SyntaxHighlightedCode(props) {
@@ -287,9 +287,6 @@ const Project = () => {
   };
 
 
-
-
-
   function FileTree({ tree, parentPath = "" }) {
     const [openFolders, setOpenFolders] = useState({});
 
@@ -312,7 +309,7 @@ const Project = () => {
           return (
             <div key={fullPath}>
               <div
-                className="tree-element cursor-pointer p-2 px-4 flex justify-between items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
+                className="tree-element cursor-pointer px-1 py-2 flex justify-between items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
                 onClick={() => {
                   if (isFile) {
                     setCurrentFile(fullPath);
@@ -322,18 +319,19 @@ const Project = () => {
                   }
                 }}
               >
-                <p className="font-semibold text-lg flex items-center">
-                  {key}
-                  <span style={{ marginLeft: 8 }}>
+                <div className="flex items-center gap-2">
+                   <span style={{ marginLeft: 8 }}>
                     {isFile ? (
-                      <i className="ri-file-line" />
+                      getFileIcon(key)
                     ) : (
-                      <i
-                        className={`ri-folder-${openFolders[fullPath] ? "open" : "line"}`}
-                      />
+                      getFolderIcon(key, openFolders[fullPath])
                     )}
                   </span>
+                <p  className="text-lg font-medium flex items-center">
+                  {key}
+                  
                 </p>
+                </div>
                 <i
                   className="ri-delete-bin-line text-red-700"
                   onClick={(e) => {
@@ -385,6 +383,8 @@ const Project = () => {
   }
   return node;
 }
+
+
 
   return (
     <main className="h-screen w-screen flex bg-[#0e0e10]">
@@ -507,11 +507,11 @@ const Project = () => {
             </button>
           </header>
 
-          <div className='flex items-center ml-4 text-red-900 gap-2'>
+          <div className='flex items-center ml-4 text-red-700 gap-2'>
             <button onClick={() => {
               leaveProject(project._id)
-            }} className='flex items-center ml-4 text-red-900 gap-2'>
-              <i class="ri-picture-in-picture-exit-line"></i>
+            }} className='flex items-center ml-4 text-red-700 gap-2'>
+              <i className="ri-picture-in-picture-exit-line"></i>
               <h1>leave the project</h1>
             </button>
           </div>
@@ -552,8 +552,11 @@ const Project = () => {
         <div className="explorer h-full max-w-64 min-w-52 bg-[#474B53] border-r-2 border-zinc-500 ">
           <div className="flex items-center p-2 bg-[#0e0e10] ">
             <div className="flex items-center justify-between w-full">
+
               <h1 className="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Explorer</h1>
-              <button onClick={() => {
+              
+             <div className='flex items-end gap-1'>
+               <button onClick={() => {
                 const newFileName = prompt("Enter new file name:");
                 if (newFileName) {
                   let updatedFileTree = {
@@ -611,9 +614,28 @@ const Project = () => {
                 }
               }}>
                 <i className="ri-file-add-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
-
               </button>
+
+              <button onClick={() => {
+                const newFolderName = prompt("Enter new folder name:");
+                if (newFolderName) {
+                  let updatedFileTree = {
+                    ...fileTree,
+                    [newFolderName]: {
+                    }// Initialize the folder with an empty object
+                  };
+                  setFileTree(updatedFileTree);
+                  saveFileTree(updatedFileTree);
+                }
+              }}>
+                <i className="ri-folder-add-line text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl"></i>
+              </button>
+             </div>
+
+
             </div>
+
+
           </div>
           <div className="file-tree w-full flex flex-col gap-[2px] mt-1">
             <FileTree tree={fileTree} />
