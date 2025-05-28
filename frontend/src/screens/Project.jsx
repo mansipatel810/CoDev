@@ -81,7 +81,7 @@ const Project = () => {
   }
 
   const send = () => {
-    console.log("sender hai ye", user)
+    // console.log("sender hai ye", user)
 
     sendMessage('project-message', {
       message,
@@ -97,8 +97,8 @@ const Project = () => {
 
   const deleteUserFromProject = (userId, projectId) => {
     const confirmed = window.confirm('Do you really want to delete this user?');
-    console.log(confirmed)
-    console.log(user)
+    // console.log(confirmed)
+    // console.log(user)
     if (confirmed) {
       if (project.users.length == 1) {
         const secondConfirmation = window.confirm("project will be deleted");
@@ -106,7 +106,7 @@ const Project = () => {
           axios
             .delete(`/api/project/delete-user/${userId}/${projectId}/${user._id}`)
             .then((res) => {
-              console.log("User deleted successfully:", res.data);
+              // console.log("User deleted successfully:", res.data);
               // Update local stat
               setProjectUsers((prevUsers) =>
                 prevUsers.filter((user) => user._id !== userId)
@@ -116,7 +116,7 @@ const Project = () => {
                 axios
                   .delete(`/api/project/delete-project/${projectId}`)
                   .then(() => {
-                    console.log("Project deleted as no users remain.");
+                    // console.log("Project deleted as no users remain.");
                     setProject(null);
                     navigate('/');
 
@@ -139,7 +139,7 @@ const Project = () => {
         axios
           .delete(`/api/project/delete-user/${userId}/${projectId}/${user._id}`)
           .then((res) => {
-            console.log("User deleted successfully:", res.data);
+            // console.log("User deleted successfully:", res.data);
 
             // Update local stat
             setProjectUsers((prevUsers) =>
@@ -152,7 +152,7 @@ const Project = () => {
           });
       }
     } else {
-      console.log("User cancelled delete");
+      // console.log("User cancelled delete");
     }
   };
 
@@ -198,7 +198,7 @@ const Project = () => {
 
       if (data.sender._id == 'ai') {
 
-        console.log(JSON.parse(data.message))
+        // console.log(JSON.parse(data.message))
         const message = JSON.parse(data.message)
 
         webContainer?.mount(message.fileTree)
@@ -245,7 +245,7 @@ const Project = () => {
       projectId: project._id,
       fileTree: ft
     }).then(res => {
-      console.log(res.data)
+      // console.log(res.data)
     }).catch(err => {
       console.log(err)
     })
@@ -264,7 +264,7 @@ const Project = () => {
           axios
             .delete(`/api/project/delete-project/${projectId}`)
             .then(() => {
-              console.log("Project deleted as no users remain.");
+              // console.log("Project deleted as no users remain.");
               setProject(null);
               navigate('/');
 
@@ -309,7 +309,7 @@ const Project = () => {
           return (
             <div key={fullPath}>
               <div
-                className="tree-element cursor-pointer px-1 py-2 flex justify-between items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
+                className=" tree-element cursor-pointer hover:scale-105 py-2 flex justify-between items-center gap-2 bg-[#0e0e10] border-2 border-zinc-400 rounded-xl w-[95%] mx-auto text-white"
                 onClick={() => {
                   if (isFile) {
                     setCurrentFile(fullPath);
@@ -320,20 +320,46 @@ const Project = () => {
                 }}
               >
                 <div className="flex items-center gap-2">
-                   <span style={{ marginLeft: 8 }}>
+                  <span style={{ marginLeft: 8 }}>
                     {isFile ? (
                       getFileIcon(key)
                     ) : (
                       getFolderIcon(key, openFolders[fullPath])
                     )}
                   </span>
-                <p  className="text-lg font-medium flex items-center">
-                  {key}
-                  
-                </p>
+                  <p className="text-lg font-medium flex items-center">
+                    {key}
+                  </p>
+                  {isFolder && (
+                    <button
+                      className="text-lg text-gray-400 hover:text-white overflow-scroll-hidden "
+                      
+                      title="Add file"
+                      onClick={e => {
+                        e.stopPropagation();
+                        const newFileName = prompt("Enter new file name:");
+                        if (newFileName) {
+                          setFileTree(prev => {
+                            const parts = fullPath.split('/');
+                            const newTree = { ...prev };
+                            let node = newTree;
+                            for (let i = 0; i < parts.length; i++) {
+                              node[parts[i]] = { ...node[parts[i]] };
+                              node = node[parts[i]];
+                            }
+                            node[newFileName] = { file: { contents: "" } };
+                            saveFileTree(newTree);
+                            return newTree;
+                          });
+                        }
+                      }}
+                    >
+                      <i className="ri-file-add-line"></i>
+                    </button>
+                  )}
                 </div>
                 <i
-                  className="ri-delete-bin-line text-red-700"
+                  className="ri-delete-bin-line text-red-700 mr-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     const updatedTree = { ...tree };
@@ -345,7 +371,6 @@ const Project = () => {
                       if (currentFile && currentFile.startsWith(fullPath)) {
                         setCurrentFile(null);
                       }
-                      // Remove the key from the parent node immutably
                       const parts = fullPath.split('/');
                       const newTree = { ...prev };
                       let node = newTree;
@@ -555,8 +580,8 @@ const Project = () => {
 
               <h1 className="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Explorer</h1>
               
-             <div className='flex items-end gap-1'>
-               <button onClick={() => {
+             <div className='  flex items-end gap-1 '>
+               <button  onClick={() => {
                 const newFileName = prompt("Enter new file name:");
                 if (newFileName) {
                   let updatedFileTree = {
@@ -612,8 +637,16 @@ const Project = () => {
                   setFileTree(updatedFileTree);
                   saveFileTree(updatedFileTree);
                 }
-              }}>
-                <i className="ri-file-add-line  text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
+              }}
+              className="relative group">
+                <i className="ri-file-add-line  hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
+                <span
+                  className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
+      rounded bg-zinc-900 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100
+      pointer-events-none transition-opacity duration-300 select-none z-50"
+                >
+                  New File
+                </span>
               </button>
 
               <button onClick={() => {
@@ -622,13 +655,21 @@ const Project = () => {
                   let updatedFileTree = {
                     ...fileTree,
                     [newFolderName]: {
-                    }// Initialize the folder with an empty object
+                      file: null // Indicating it's a folder
+                    }
                   };
                   setFileTree(updatedFileTree);
                   saveFileTree(updatedFileTree);
                 }
-              }}>
-                <i className="ri-folder-add-line text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl"></i>
+              }} className="relative group">
+                <i className="ri-folder-add-line hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl"></i>
+                <span
+                  className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
+      rounded bg-zinc-900 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100
+      pointer-events-none transition-opacity duration-300 select-none z-50"
+                >
+                  New Folder
+                </span>
               </button>
              </div>
 
@@ -650,7 +691,7 @@ const Project = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentFile(file)}
-                    className={`open-file cursor-pointer p-2 px-2 text-xl  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
+                    className={`open-file cursor-pointer hover:bg-zinc-600 p-2 px-2 text-xl  flex items-center w-fit gap-2 text-white  border-[1px] border-zinc-600  rounded-[2px] ${currentFile === file ? ' bg-[#6e6f72]' : ''}`}>
                     <p
                       className='font-semibold text-lg'
                     >{file}</p>
@@ -708,7 +749,7 @@ const Project = () => {
                   })
 
                 }}
-                className='run p-2 px-4 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl m-2 text-white'
+                className='run p-2 px-4  hover:scale-110 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl m-2 text-white active:scale-95'
               >
                 Run
               </button>
@@ -731,7 +772,6 @@ const Project = () => {
                         suppressContentEditableWarning
                         onBlur={(e) => {
                           const updatedContent = e.target.innerText;
-                          // Update nested fileTree immutably
                           const parts = currentFile.split('/');
                           const newTree = { ...fileTree };
                           let node = newTree;
@@ -764,7 +804,7 @@ const Project = () => {
         </div>
 
         {iframeUrl && webContainer &&
-          (<div className="flex min-w-96 flex-col h-full bg-[#]">
+          (<div className="flex min-w-96 flex-col h-full bg-[#000000]">
             <div className="address-bar">
               <input type="text"
                 onChange={(e) => setIframeUrl(e.target.value)}
