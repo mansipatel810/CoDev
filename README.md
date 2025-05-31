@@ -1,12 +1,12 @@
-# 🤖 CoDev AI
+# 🤖 CoDev 
 
-CoDev AI is a full-stack real-time collaborative development platform where project collaborators can chat, write, edit, and run code directly in the browser — powered by WebSockets, Google Generative AI, and WebContainer. Just mention `@ai` to generate modular code, which is shared live with all collaborators in the project space.
+CoDev  is a full-stack real-time collaborative development platform where project collaborators can chat, write, edit, and run code directly in the browser — powered by WebSockets, Google Generative AI, and WebContainer. Just mention `@ai` to generate modular code, which is shared live with all collaborators in the project space.
 
 ---
 
 ## 🚀 Features
 
-- **🗨️ Project-Based Real-Time Chat** – Collaborators can chat within their specific project workspace.
+- **🗨️ Project-Based Real-Time Chat** – Collaborators can chat within their specific project workspace and also create their own custom file and folder structure collaboratively in real time..
 - **🧠 Ask @ai** – Mention `@ai` in chat to:
   - Ask programming questions
   - Generate backend/frontend code
@@ -44,7 +44,7 @@ Type `@ai` followed by a request in the project chat.
 
 Example: `@ai generate an express server with MongoDB connection and routes`
 
-CoDev AI will:
+CoDev  will:
 
 - Respond in chat
 - Create and share modular files like `server.js`, `routes.js`, `package.json`, etc.
@@ -86,7 +86,7 @@ Pull requests are welcome. For major changes, open an issue first to discuss wha
 ## 🔐 Backend `.env` file
 
 ```ini
-PORT=5000
+PORT=3000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 REDIS_HOST=your_redis_host
@@ -99,7 +99,7 @@ GOOGLE_AI_KEY=your_google_ai_api_key
 ini
 Copy
 Edit
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:3000
 
 ---
 #🧪 Running the Application
@@ -107,8 +107,8 @@ VITE_API_URL=http://localhost:5000
 bash
 Copy
 Edit
-git clone https://github.com/yourusername/CoDevAI.git
-cd CoDevAI
+git clone https://github.com/yourusername/CoDev.git
+cd CoDev
 🚀 Start Backend
 bash
 Copy
