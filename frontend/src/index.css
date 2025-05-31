@@ -1,4 +1,8 @@
+
 @import "tailwindcss";
+
+
+
 
 
 .border-gradient {
@@ -18,7 +22,7 @@
   inset: 0;
   padding: 2px;
   border-radius: 9999px;
-  background: linear-gradient(to right, #8b5cf6, #3b82f6); /* purple to blue */
+  background: linear-gradient(to right, #24CFA6, #E0F2E2); /* purple to blue */
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);
@@ -51,7 +55,7 @@
   position: absolute;
   inset: 0;
   padding: 2px;
-  background: linear-gradient(to right, #8b5cf6, #3b82f6); /* purple to blue */
+  background: linear-gradient(to right, #24CFA6, #E0F2E2); /* purple to blue */
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);

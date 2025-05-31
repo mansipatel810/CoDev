@@ -32,9 +32,15 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a]">
-      <div className="bg-gradient-to-tr from-purple-900  to-indigo-900 p-10 rounded-2xl shadow-2xl w-full max-w-md">
-        <h2 className="text-4xl font-extrabold text-white mb-8 text-center">Create Account</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0d0d0d] to-[#1a1a1a]">
+      <div className="left bg-gradient-to-tr bg-black px-8 py-10 rounded-2xl shadow-2xl w-full max-w-md">
+        <div>
+          <div className='flex gap-1 items-center justify-center'>
+            <img src="/newlogo.png" className='inline-block h-12' alt="" />
+          <h2 className="text-3xl font-semibold text-[#24CFA6] ">Welcome to CoDev</h2>
+          </div>
+          <p className='text-gray-400 text-center mb-8 mt-2'>Innovation starts with your next line of code.</p>
+        </div>
         <form onSubmit={submitHandler} className="space-y-6">
           <div>
             <label htmlFor="userName" className="block text-gray-300 mb-2 font-medium">
@@ -47,7 +53,7 @@ const Register = () => {
               onChange={(e) => setUserName(e.target.value)}
               required
               placeholder="Enter your username"
-              className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-zinc-900 transition"
+              className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#24CFA6] focus:ring-offset-1 focus:ring-offset-zinc-900 transition"
             />
           </div>
 
@@ -62,7 +68,7 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-zinc-900 transition"
+              className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#24CFA6] focus:ring-offset-1 focus:ring-offset-zinc-900 transition"
             />
           </div>
 
@@ -77,13 +83,13 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Enter your password"
-              className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-zinc-900 transition"
+              className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#24CFA6] focus:ring-offset-1 focus:ring-offset-zinc-900 transition"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold text-lg hover:scale-105 transform transition"
+            className="w-full py-3 text-black rounded-full bg-gradient-to-r from-[#148e72] to-[#add3b1]  font-semibold text-lg hover:scale-105 transform transition"
           >
             Register
           </button>
@@ -91,7 +97,7 @@ const Register = () => {
 
         <p className="text-gray-400 mt-6 text-center">
           Have an account?{' '}
-          <Link to="/login" className="text-purple-400 hover:text-purple-600 font-semibold underline">
+          <Link to="/login" className="text-[#24CFA6] hover:text-[#E0F2E2] font-semibold underline">
             Log in
           </Link>
         </p>

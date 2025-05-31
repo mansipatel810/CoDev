@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { UserContext } from '../context/user.context'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
@@ -412,18 +412,25 @@ const Project = () => {
 
 
   return (
-    <main className="h-screen w-screen flex bg-[#0e0e10]">
+    <main className="h-screen w-screen flex bg-[#0e0e10]  md:flex-row flex-col relative">
 
       <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300  ">
-        <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
-          <h1 className='capitalize text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400'>{project.name}</h1>
+        <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
+          <div className='flex items-center gap-1'>
+          <Link to="/">
+            <i className="ri-home-8-line text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]"></i>
+          </Link>
+          <Link to={`/project`} state={{ project: project }} className="text-3xl capitalize text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]">
+            {project.name}
+          </Link>
+          </div>
           <div className='flex justify-center items-center gap-4'>
 
             <button
               className="relative flex items-center group"
               onClick={() => setIsModalOpen(true)}
             >
-              <i className="ri-add-fill text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400"></i>
+              <i className="ri-add-fill cursor-pointer text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]"></i>
 
               <span
                 className="absolute  top-8  -translate-x-1/2 whitespace-nowrap
@@ -438,7 +445,7 @@ const Project = () => {
               onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
               className="relative group p-2"
             >
-              <i className="ri-group-fill text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400"></i>
+              <i className="ri-group-fill cursor-pointer text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]"></i>
 
               <span
                 className="absolute top-8 left-1/2  -translate-x-1/2 whitespace-nowrap
@@ -456,7 +463,7 @@ const Project = () => {
           <div
             className="relative w-[95%] h-[97%] mx-auto  rounded-xl"
             style={{
-              backgroundImage: "url('/public/logo1_gradient.png')",
+              backgroundImage: "url('/public/newlogo.png')",
               backgroundRepeat: 'no-repeat',
               backgroundSize: '50vh',
               backgroundPosition: 'center'
@@ -509,7 +516,7 @@ const Project = () => {
             />
             <button
               onClick={send}
-              className="px-4 mr-1 rounded-4xl h-[5vh] w-[5vh] flex justify-center items-center bg-gradient-to-r from-purple-400 to-blue-400 text-white"
+              className="px-4 mr-1 rounded-4xl h-[5vh] w-[5vh] flex justify-center items-center bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-black hover:scale-110"
             >
               <i className="ri-send-plane-fill"></i>
             </button>
@@ -520,22 +527,22 @@ const Project = () => {
             } top-0`}
         >
           <header className="flex justify-between items-center px-4 p-2 ">
-            <h1 className="font-semibold text-lg">
+            <h1 className="font-semibold text-2xl ">
               Collaborators
             </h1>
 
             <button
               onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-              className="p-2"
+              className="p-2 cursor-pointer"
             >
-              <i className="ri-close-fill"></i>
+              <i className="ri-close-fill text-3xl"></i>
             </button>
           </header>
 
-          <div className='flex items-center ml-4 text-red-700 gap-2'>
+          <div className='flex items-center ml-4 text-red-700 gap-2 '>
             <button onClick={() => {
               leaveProject(project._id)
-            }} className='flex items-center ml-4 text-red-700 gap-2'>
+            }} className='flex items-center ml-4 text-red-700 gap-2 cursor-pointer'>
               <i className="ri-picture-in-picture-exit-line"></i>
               <h1>leave the project</h1>
             </button>
@@ -545,7 +552,7 @@ const Project = () => {
             {projectUsers &&
               projectUsers.map((user) => {
                 return (
-                  <div className="group p-[2px] rounded-md bg-transparent hover:bg-gradient-to-r from-purple-400 to-blue-400 transition-all duration-300">
+                  <div className="group p-[2px] rounded-md bg-transparent hover:bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] transition-all duration-300">
                     <div className="flex gap-2 items-center p-2 rounded-md bg-[#0e0e10]">
                       <div className="aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">
                         <i className="ri-user-fill absolute"></i>
@@ -558,7 +565,7 @@ const Project = () => {
                           )}
                         </div>
                         <button onClick={() => deleteUserFromProject(user._id, project._id)}>
-                          <i className="ri-delete-bin-line text-red-900"></i>
+                          <i className="ri-delete-bin-line text-red-700 cursor-pointer"></i>
                         </button>
 
                       </div>
@@ -572,13 +579,13 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="right  bg-#2B2B30 flex-grow h-full flex border-2 border-zinc-500">
+      <section className="right  bg-#2B2B30 flex-grow h-full flex border-2 border-zinc-500 md:flex-row flex-col overflow-hidden">
 
-        <div className="explorer h-full max-w-64 min-w-52 bg-[#474B53] border-r-2 border-zinc-500 ">
+        <div className="explorer h-full max-w-64 min-w-52  bg-[#474B53] border-r-2 border-zinc-500 ">
           <div className="flex items-center p-2 bg-[#0e0e10] ">
             <div className="flex items-center justify-between w-full">
 
-              <h1 className="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Explorer</h1>
+              <h1 className="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]">Explorer</h1>
               
              <div className='  flex items-end gap-1 '>
                <button  onClick={() => {
@@ -639,7 +646,7 @@ const Project = () => {
                 }
               }}
               className="relative group">
-                <i className="ri-file-add-line  hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl "></i>
+                <i className="ri-file-add-line cursor-pointer  hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-3xl "></i>
                 <span
                   className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
       rounded bg-zinc-900 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100
@@ -662,7 +669,7 @@ const Project = () => {
                   saveFileTree(updatedFileTree);
                 }
               }} className="relative group">
-                <i className="ri-folder-add-line hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-3xl"></i>
+                <i className="ri-folder-add-line cursor-pointer hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-3xl"></i>
                 <span
                   className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
       rounded bg-zinc-900 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100
@@ -696,12 +703,11 @@ const Project = () => {
                       className='font-semibold text-lg'
                     >{file}</p>
                     <i
-                      className="ri-close-line text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 text-xl"
+                      className="ri-close-line text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-xl"
                       onClick={e => {
-                        e.stopPropagation(); // Prevent tab switch
+                        e.stopPropagation(); 
                         setOpenFiles(prev => {
                           const updated = prev.filter(f => f !== file);
-                          // If the closed file is the current file, switch to another open file or null
                           if (currentFile === file) {
                             setCurrentFile(updated.length > 0 ? updated[updated.length - 1] : null);
                           }
@@ -749,10 +755,11 @@ const Project = () => {
                   })
 
                 }}
-                className='run p-2 px-4  hover:scale-110 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl m-2 text-white active:scale-95'
+                className='run p-2 px-4   hover:scale-110 bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] rounded-xl m-2 text-black font-semibold active:scale-95'
               >
                 Run
               </button>
+
 
 
             </div>
@@ -825,9 +832,9 @@ const Project = () => {
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2"
+                className="p-2 cursor-pointer"
               >
-                <i className="ri-close-fill"></i>
+                <i className="ri-close-fill text-3xl"></i>
               </button>
             </header>
             <div className="users-list flex flex-col gap-2 mb-16 max-h-96 overflow-auto">
@@ -839,8 +846,8 @@ const Project = () => {
                 >
                   <div
                     className={`p-[2px] rounded-xl transition ${Array.from(selectedUserId).includes(user._id)
-                      ? 'bg-gradient-to-r from-purple-400 to-blue-400'
-                      : 'hover:bg-gradient-to-r from-purple-400 to-blue-400'
+                      ? 'bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]'
+                      : 'hover:bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]'
                       }`}
                   >
                     <div
@@ -863,7 +870,7 @@ const Project = () => {
             </div>
             <button
               onClick={addCollaborators}
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-purple-400 to-blue-400 text-white rounded-md"
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-black font-semibold rounded-md active:scale-95 hover:scale-105"
             >
               Add Collaborators
             </button>
