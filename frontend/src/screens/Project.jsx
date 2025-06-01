@@ -179,7 +179,7 @@ const Project = () => {
       </div>)
   }
 
-  
+
 
   useEffect(() => {
 
@@ -333,12 +333,16 @@ const Project = () => {
                   {isFolder && (
                     <button
                       className="text-lg text-gray-400 hover:text-white overflow-scroll-hidden "
-                      
+
                       title="Add file"
                       onClick={e => {
                         e.stopPropagation();
                         const newFileName = prompt("Enter new file name:");
                         if (newFileName) {
+                          if (node.hasOwnProperty(newFileName)) {
+                            alert("File already exists!");
+                            return prev;
+                          }
                           setFileTree(prev => {
                             const parts = fullPath.split('/');
                             const newTree = { ...prev };
@@ -399,15 +403,15 @@ const Project = () => {
   }
 
   function getFileByPath(tree, path) {
-  if (!path) return null; // <-- Prevents error when currentFile is null/undefined
-  const parts = path.split('/');
-  let node = tree;
-  for (let part of parts) {
-    if (!node[part]) return null;
-    node = node[part];
+    if (!path) return null; // <-- Prevents error when currentFile is null/undefined
+    const parts = path.split('/');
+    let node = tree;
+    for (let part of parts) {
+      if (!node[part]) return null;
+      node = node[part];
+    }
+    return node;
   }
-  return node;
-}
 
 
 
@@ -417,12 +421,12 @@ const Project = () => {
       <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300  ">
         <header className="flex justify-between items-center p-2 px-4 w-full bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-transparent bg-clip-text font-medium absolute z-10 top-0 bg-[#2B2B30]">
           <div className='flex items-center gap-1'>
-          <Link to="/">
-            <i className="ri-home-8-line text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]"></i>
-          </Link>
-          <Link to={`/project`} state={{ project: project }} className="text-3xl capitalize text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]">
-            {project.name}
-          </Link>
+            <Link to="/">
+              <i className="ri-home-8-line text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]"></i>
+            </Link>
+            <Link to={`/project`} state={{ project: project }} className="text-3xl capitalize text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]">
+              {project.name}
+            </Link>
           </div>
           <div className='flex justify-center items-center gap-4'>
 
@@ -486,13 +490,13 @@ const Project = () => {
 
                 return (
                   <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${msg.sender._id == user._id.toString() && 'ml-auto'}  message flex flex-col text-white p-2 bg-[#0e0e10] w-fit rounded-md`}>
-                <small className='opacity-65 text-xs'>{msg.sender.userName==user.userName? <span></span> : <span>{msg.sender.userName}</span>}</small>
-                <div className='text-sm'>
-                  {msg.sender._id === 'ai' ?
-                    WriteAiMessage(msg.message)
-                    : <p>{msg.message}</p>}
-                </div>
-              </div>
+                    <small className='opacity-65 text-xs'>{msg.sender.userName == user.userName ? <span></span> : <span>{msg.sender.userName}</span>}</small>
+                    <div className='text-sm'>
+                      {msg.sender._id === 'ai' ?
+                        WriteAiMessage(msg.message)
+                        : <p>{msg.message}</p>}
+                    </div>
+                  </div>
                 );
               })}
 
@@ -586,99 +590,107 @@ const Project = () => {
             <div className="flex items-center justify-between w-full">
 
               <h1 className="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2]">Explorer</h1>
-              
-             <div className='  flex items-end gap-1 '>
-               <button  onClick={() => {
-                const newFileName = prompt("Enter new file name:");
-                if (newFileName) {
-                  let updatedFileTree = {
-                    ...fileTree,
-                    [newFileName]: {
-                      file: {
-                        contents: ""
-                      }
-                    }
-                  };
 
-                  // If the new file is an HTML file, add/update server.js and package.json
-                  if (newFileName.endsWith('.html')) {
-                    updatedFileTree["server.js"] = {
-                      file: {
-                        contents: expressStaticTemplate(newFileName)
+              <div className='  flex items-end gap-1 '>
+                <button onClick={() => {
+                  const newFileName = prompt("Enter new file name:");
+                  if (newFileName) {
+                    if (fileTree.hasOwnProperty(newFileName)) {
+                      alert("File already exists!");
+                      return;
+                    }
+                    let updatedFileTree = {
+                      ...fileTree,
+                      [newFileName]: {
+                        file: {
+                          contents: ""
+                        }
                       }
                     };
-                    updatedFileTree["package.json"] = {
-                      file: {
-                        contents: JSON.stringify({
-                          name: "my-app",
-                          version: "1.0.0",
-                          main: "server.js",
-                          scripts: {
-                            start: "node server.js"
-                          },
-                          dependencies: {
-                            express: "^4.18.2"
-                          }
-                        }, null, 2)
-                      }
-                    };
-                  } else if (!updatedFileTree["package.json"]) {
-                    // fallback for non-html files
-                    updatedFileTree["package.json"] = {
-                      file: {
-                        contents: JSON.stringify({
-                          name: "my-app",
-                          version: "1.0.0",
-                          main: newFileName,
-                          scripts: {
-                            start: "node " + newFileName
-                          },
-                          dependencies: {
-                            express: "^4.18.2"
-                          }
-                        }, null, 2)
-                      }
-                    };
+
+                    // If the new file is an HTML file, add/update server.js and package.json
+                    if (newFileName.endsWith('.html')) {
+                      updatedFileTree["server.js"] = {
+                        file: {
+                          contents: expressStaticTemplate(newFileName)
+                        }
+                      };
+                      updatedFileTree["package.json"] = {
+                        file: {
+                          contents: JSON.stringify({
+                            name: "my-app",
+                            version: "1.0.0",
+                            main: "server.js",
+                            scripts: {
+                              start: "node server.js"
+                            },
+                            dependencies: {
+                              express: "^4.18.2"
+                            }
+                          }, null, 2)
+                        }
+                      };
+                    } else if (!updatedFileTree["package.json"]) {
+                      // fallback for non-html files
+                      updatedFileTree["package.json"] = {
+                        file: {
+                          contents: JSON.stringify({
+                            name: "my-app",
+                            version: "1.0.0",
+                            main: newFileName,
+                            scripts: {
+                              start: "node " + newFileName
+                            },
+                            dependencies: {
+                              express: "^4.18.2"
+                            }
+                          }, null, 2)
+                        }
+                      };
+                    }
+
+                    setFileTree(updatedFileTree);
+                    saveFileTree(updatedFileTree);
                   }
-
-                  setFileTree(updatedFileTree);
-                  saveFileTree(updatedFileTree);
-                }
-              }}
-              className="relative group">
-                <i className="ri-file-add-line cursor-pointer  hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-3xl "></i>
-                <span
-                  className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
+                }}
+                  className="relative group">
+                  <i className="ri-file-add-line cursor-pointer  hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-3xl "></i>
+                  <span
+                    className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
       rounded bg-zinc-900 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100
       pointer-events-none transition-opacity duration-300 select-none z-50"
-                >
-                  New File
-                </span>
-              </button>
+                  >
+                    New File
+                  </span>
+                </button>
 
-              <button onClick={() => {
-                const newFolderName = prompt("Enter new folder name:");
-                if (newFolderName) {
-                  let updatedFileTree = {
-                    ...fileTree,
-                    [newFolderName]: {
-                      file: null // Indicating it's a folder
+                <button onClick={() => {
+                  const newFolderName = prompt("Enter new folder name:");
+                  if (newFolderName) {
+                    if (fileTree.hasOwnProperty(newFolderName)) {
+                      alert("Folder already exists!");
+                      return;
                     }
-                  };
-                  setFileTree(updatedFileTree);
-                  saveFileTree(updatedFileTree);
-                }
-              }} className="relative group">
-                <i className="ri-folder-add-line cursor-pointer hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-3xl"></i>
-                <span
-                  className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
+                    let updatedFileTree = {
+                      ...fileTree,
+                      [newFolderName]: {
+                        file: null // Indicating it's a folder
+                      }
+                    };
+                    setFileTree(updatedFileTree);
+                    saveFileTree(updatedFileTree);
+                  }
+                }} className="relative group">
+                  <i className="ri-folder-add-line cursor-pointer hover:text-white text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-3xl"></i>
+                  <span
+                    className="absolute left-1/2  top-10 -translate-x-1/2 whitespace-nowrap
       rounded bg-zinc-900 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100
       pointer-events-none transition-opacity duration-300 select-none z-50"
-                >
-                  New Folder
-                </span>
-              </button>
-             </div>
+                  >
+                    New Folder
+                  </span>
+                </button>
+              </div>
 
 
             </div>
@@ -705,7 +717,7 @@ const Project = () => {
                     <i
                       className="ri-close-line text-transparent bg-clip-text bg-gradient-to-r from-[#24CFA6] to-[#E0F2E2] text-xl"
                       onClick={e => {
-                        e.stopPropagation(); 
+                        e.stopPropagation();
                         setOpenFiles(prev => {
                           const updated = prev.filter(f => f !== file);
                           if (currentFile === file) {
