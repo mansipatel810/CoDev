@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const Project=require('./src/models/projectModel/project.model.js');
 const User=require('./src/models/userModel/user.model.js');
 const {genrateResult}=require('./src/services/ai.service.js');
+const Message=require('./src/models/messageModel/message.model.js');
 
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
@@ -67,6 +68,15 @@ io.on('connection', (socket) => {
 
     const aiIsPresentInMessage=message.includes('@ai');
     socket.broadcast.to(socket.project._id.toString()).emit('project-message', data);
+
+
+    await Message.create({
+      project: socket.project._id,
+      sender: socket.userId,
+      message: data.message
+    });
+
+
 
     if (aiIsPresentInMessage) {
       const prompt = message.replace('@ai', '');

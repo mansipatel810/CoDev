@@ -193,6 +193,26 @@ const Project = () => {
       })
     }
 
+    
+
+    axios
+      .get(`/api/messages/project/${location.state.project._id}`)
+      .then((res) => {
+        if (res.data.success && Array.isArray(res.data.data)) {
+          setMessages(res.data.data.map(msg => ({
+            sender: msg.sender,
+            message: msg.message
+          })));
+        } else {
+          console.error('Invalid response format:', res.data);
+          setMessages([]);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching messages:', err);
+        setMessages([]);
+      });
+
 
     receiveMessage('project-message', data => {
 
@@ -413,6 +433,13 @@ const Project = () => {
     }
     return node;
   }
+
+  useEffect(() => {
+    if (messageBox.current) {
+      messageBox.current.scrollTop = messageBox.current.scrollHeight;
+    }
+  }, [messages]); // This will run whenever messages change
+
 
 
 

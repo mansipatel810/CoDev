@@ -7,6 +7,8 @@ const cors = require('cors');
 const projectRoutes = require('../src/routes/projectRoutes/project.routes');
 const aiRoutes = require('../src/routes/aiRoutes/ai.routes');
 const session = require('express-session');
+const messageRoutes = require('./routes/messageRoutes/message.routes');
+
 
 
 
@@ -35,5 +37,7 @@ app.use(session({
 app.use('/api/auth', userRoutes);
 app.use('/api/project', projectRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/messages',messageRoutes);
+
 
 module.exports = app;
