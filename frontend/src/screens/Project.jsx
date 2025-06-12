@@ -9,6 +9,7 @@ import { getWebContainer } from '../config/webContainer'
 import { useNavigate } from "react-router-dom";
 import expressStaticTemplate from '../utils/expressStaticTemplate';
 import { getFileIcon, getFolderIcon } from '../utils/functions';
+import Editor from "@monaco-editor/react";
 
 
 function SyntaxHighlightedCode(props) {
@@ -205,11 +206,11 @@ const Project = () => {
 
         if (message.fileTree) {
           setFileTree(message.fileTree || {})
+          saveFileTree(message.fileTree)
         }
         setMessages(prevMessages => [...prevMessages, data])
       } else {
-
-
+        console.log("data", data)
         setMessages(prevMessages => [...prevMessages, data])
       }
     })
@@ -276,7 +277,7 @@ const Project = () => {
               console.error("Error deleting project:", err);
             });
         } else {
-          setProject(res.data.data); // optional: update UI
+          setProject(res.data.data);
           navigate('/');
         }
       })
@@ -301,7 +302,7 @@ const Project = () => {
       <div className="flex flex-col gap-[2px]">
         {Object.keys(tree).map((key, idx) => {
           const node = tree[key];
-          if (!node) return null; // <-- Skip undefined nodes!
+          if (!node) return null;
           const isFile = node?.file && typeof node.file.contents === "string";
           const isFolder = !isFile && typeof node === "object";
           const fullPath = parentPath ? `${parentPath}/${key}` : key;
@@ -583,9 +584,8 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="right  bg-#2B2B30 flex-grow h-full flex border-2 border-zinc-500 md:flex-row flex-col overflow-hidden">
-
-        <div className="explorer h-full max-w-64 min-w-52  bg-[#474B53] border-r-2 border-zinc-500 ">
+      <section className="right bg-#2B2B30 flex-grow h-full flex border-2 border-zinc-500 md:flex-row flex-col overflow-x-auto">
+        <div className="explorer h-full max-w-64 min-w-52 bg-[#474B53] border-r-2 border-zinc-500 flex-shrink-0">
           <div className="flex items-center p-2 bg-[#0e0e10] ">
             <div className="flex items-center justify-between w-full">
 
@@ -608,7 +608,6 @@ const Project = () => {
                       }
                     };
 
-                    // If the new file is an HTML file, add/update server.js and package.json
                     if (newFileName.endsWith('.html')) {
                       updatedFileTree["server.js"] = {
                         file: {
@@ -702,7 +701,7 @@ const Project = () => {
           </div>
         </div>
 
-        <div className="code-editor flex flex-col  flex-grow h-full shrink bg-[#0e0e10] border-r-2 border-zinc-500">
+        <div className="code-editor flex flex-col flex-grow h-full shrink-0 bg-[#0e0e10] border-r-2 border-zinc-500 min-w-[500px]">
           <div className="top flex justify-between w-full">
             <div className="files flex gap-[2px] m-1">
               {
@@ -784,36 +783,44 @@ const Project = () => {
                 const fileNode = getFileByPath(fileTree, currentFile);
                 return fileNode?.file?.contents !== undefined && (
                   <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
-                    <pre className="hljs h-full">
-                      <code
-                        className="hljs h-full outline-none"
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => {
-                          const updatedContent = e.target.innerText;
+                    <div className="code-editor-area h-full flex-grow">
+                      <Editor
+                        height="100%"
+                        defaultLanguage="javascript"
+                        theme="vs-dark"
+                        value={fileNode.file.contents}
+                        onChange={(value) => {
                           const parts = currentFile.split('/');
                           const newTree = { ...fileTree };
                           let node = newTree;
+
                           for (let i = 0; i < parts.length - 1; i++) {
                             node[parts[i]] = { ...node[parts[i]] };
                             node = node[parts[i]];
                           }
+
                           node[parts[parts.length - 1]] = {
-                            file: { contents: updatedContent }
+                            file: { contents: value || "" }
                           };
+
                           setFileTree(newTree);
                           saveFileTree(newTree);
                         }}
-                        dangerouslySetInnerHTML={{
-                          __html: hljs.highlight('javascript', fileNode.file.contents).value
-                        }}
-                        style={{
-                          whiteSpace: 'pre-wrap',
-                          paddingBottom: '25rem',
-                          counterSet: 'line-numbering',
+                        options={{
+                          automaticLayout: true,
+                          fontSize: 16,
+                          minimap: { enabled: false },
+                          scrollBeyondLastLine: false,
+                          wordWrap: 'on',
+                          autoClosingBrackets: "always",
+                          autoClosingQuotes: "always",
+                          matchBrackets: "always",
+                          formatOnType: true,
+                          formatOnPaste: true,
                         }}
                       />
-                    </pre>
+                    </div>
+
                   </div>
                 );
               })()
@@ -823,13 +830,13 @@ const Project = () => {
         </div>
 
         {iframeUrl && webContainer &&
-          (<div className="flex min-w-96 flex-col h-full bg-[#000000]">
+          (<div className="flex min-w-96 flex-col h-full bg-[#000000] flex-shrink-0">
             <div className="address-bar">
               <input type="text"
                 onChange={(e) => setIframeUrl(e.target.value)}
                 value={iframeUrl} className="w-full p-2 px-4 bg-[#515254] border-2 my-1 border-zinc-500" />
             </div>
-            <iframe src={iframeUrl} className="w-full h-full bg-zinc-200 text-red-white "></iframe>
+            <iframe src={iframeUrl}  allow="camera; microphone" className="w-full h-full bg-zinc-200 text-red-white "></iframe>
           </div>)
         }
 
