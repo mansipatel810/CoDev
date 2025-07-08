@@ -25,7 +25,7 @@ io.use(async (socket, next) => {
     const token = socket.handshake.auth?.token || socket.handshake.headers.authorization?.split(' ')[1];
     const projectId = socket.handshake.query.projectId;
 
-    console.log('projectId', projectId);
+    // console.log('projectId', projectId);
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return next(new customError('Invalid project id', 400));
     }
@@ -42,7 +42,7 @@ io.use(async (socket, next) => {
       return next(new customError('User not found', 401));
     }
 
-    console.log('Authenticated user:', user.userName);
+    // console.log('Authenticated user:', user.userName);
     socket.userId = user.id;
     socket.userName = user.userName; 
     next();
@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
   socket.join(socket.project._id.toString());
 
   socket.on('project-message', async (data) => {
-    console.log('Received message:', data);
+    // console.log('Received message:', data);
     const message=data.message
 
     
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
     if (aiIsPresentInMessage) {
       const prompt = message.replace('@ai', '');
       const result = await genrateResult(prompt);
-      console.log('AI result:', result);
+      // console.log('AI result:', result);
 
       io.to(socket.project._id.toString()).emit('project-message', {
           message: result,
@@ -97,7 +97,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.userId);
+    // console.log('Socket disconnected:', socket.userId);
     socket.leave(socket.project._id.toString());
   });
 });

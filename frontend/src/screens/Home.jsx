@@ -19,7 +19,7 @@ const Home = () => {
     useEffect(() => {
         axios.get('/api/auth/current-user', { withCredentials: true })
             .then(res => {
-                console.log(res, "hello");
+                // console.log(res, "hello");
                 setUser(res.data.data);
             })
             .catch(() => {
@@ -44,7 +44,7 @@ const Home = () => {
     useEffect(() => {
         axios.get('/api/project/get-all-projects')
             .then((res) => {
-                console.log("project", res.data.data);
+                // console.log("project", res.data.data);
                 setProject(res.data.data)
             }).catch(err => {
                 console.log(err)

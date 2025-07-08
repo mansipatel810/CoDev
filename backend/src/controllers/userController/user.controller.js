@@ -1,7 +1,7 @@
 const userModel = require('../../models/userModel/user.model');
 const { validationResult } = require('express-validator');
 const customError = require('../../utils/customError.js');
-const cacheClient = require('../../services/cacheService/cache.service .js')
+// const cacheClient = require('../../services/cacheService/cache.service .js')
 const jwt = require('jsonwebtoken');
 
 const userRegister = async (req, res, next) => {
@@ -75,7 +75,7 @@ const userLogin = async (req, res, next) => {
 
 const currentUser = async (req, res, next) => {
     const user = req.user
-    console.log(user)
+    // console.log(user)
     res.status(200).json({
         success: true,
         data: user
@@ -86,15 +86,15 @@ const userLogout = async (req, res, next) => {
 
     try {
         const token = req.cookies.token
-        console.log("logout token", token)
+        // console.log("logout token", token)
         if (!token) return next(new customError("user not logged in", 400))
 
-        const blackListToken = await cacheClient.set(
-            token,
-            "blacklisted",
-            "EX",
-            60 * 60 * 24
-        )
+        // const blackListToken = await cacheClient.set(
+        //     token,
+        //     "blacklisted",
+        //     "EX",
+        //     60 * 60 * 24
+        // )
 
         res.clearCookie("token");
         res.status(200).json({
@@ -133,23 +133,23 @@ const getAllUsers = async (req, res, next) => {
 
 const validateUser = async (req, res)=>{
   const token = req.cookies.token;
-  console.log("validate token", token)
+//   console.log("validate token", token)
   if (!token) return res.status(401).json({ error: "No token" });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("decoded", decoded)
+    // console.log("decoded", decoded)
     const user = await userModel.findOne({ email: decoded.email });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    console.log("user", user)
+    // console.log("user", user)
     res.json({
       success: true,
       data:user
     });
   } catch (err) {
-    console.log("Invalid token", err);
+    // console.log("Invalid token", err);
     return res.status(403).json({ error: "Invalid token" });
   }
 }

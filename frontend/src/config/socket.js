@@ -19,7 +19,7 @@ export const initializeSocket = (projectId) => {
   });
 
   socketInstance.on('connect', () => {
-    console.log('Socket connected:', socketInstance.id);
+    // console.log('Socket connected:', socketInstance.id);
   });
 
   socketInstance.on('connect_error', (err) => {
