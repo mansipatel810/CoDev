@@ -25,4 +25,4 @@ const Approutes = () => {
   );
 };
 
-export default Approutes;
+export default AppRoutes;
