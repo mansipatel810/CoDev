@@ -18,7 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
 app.use(cookieParser()); 
 app.use(cors({
-  origin: 'http://localhost:5173',
+ origin: [
+    'https://codev-lpk6.onrender.com', 
+    'http://localhost:5173'            
+  ],
   credentials: true, 
 }));
 app.use(session({
