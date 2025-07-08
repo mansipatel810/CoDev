@@ -7,7 +7,7 @@ import Project from '../screens/Project';
 import UserAuth from '../auth/UserAuth';
 import { UserContext } from '../context/user.context'; 
 
-const Approutes = () => {
+const AppRoutes = () => {
   const { loading } = useContext(UserContext);
 
   if (loading) return null;
