@@ -10,6 +10,11 @@ const Project=require('./src/models/projectModel/project.model.js');
 const User=require('./src/models/userModel/user.model.js');
 const {genrateResult}=require('./src/services/ai.service.js');
 const Message=require('./src/models/messageModel/message.model.js');
+const path = require('path');
+const express = require('express');
+
+
+// const __dirname= path.resolve();
 
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
@@ -103,6 +108,24 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT;
+
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.send('Backend running in development mode.');
+  });
+
+  app.get('*', (req, res) => {
+    res.status(404).send('API route not found.');
+  });
+}
+
+
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

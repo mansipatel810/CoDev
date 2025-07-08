@@ -1,0 +1,13 @@
+{
+  "name": "codev-ai",
+  "version": "1.0.0",
+  "description": "CoDev  is a full-stack real-time collaborative development platform where project collaborators can chat, write, edit, and run code directly in the browser — powered by WebSockets, Google Generative AI, and WebContainer. Just mention `@ai` to generate modular code, which is shared live with all collaborators in the project space.",
+  "main": "index.js",
+  "scripts": {
+    "build":"npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
