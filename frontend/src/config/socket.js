@@ -8,9 +8,11 @@ export const initializeSocket = (projectId) => {
     return;
   }
 
-  // In dev: use VITE_API_URL (localhost:3000)
-  // In production: use the same origin the app is served from (Render URL)
-  const SOCKET_URL = import.meta.env.VITE_API_URL || window.location.origin;
+  // import.meta.env.MODE is set by Vite itself — "development" or "production"
+  // Cannot be overridden by user env vars, so this is always reliable
+  const SOCKET_URL = import.meta.env.MODE === 'development'
+    ? 'http://localhost:3000'
+    : window.location.origin;
 
   socketInstance = io(SOCKET_URL, {
     auth: {
