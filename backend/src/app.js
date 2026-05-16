@@ -25,7 +25,7 @@ app.use(cors({
   credentials: true, 
 }));
 app.use(session({
-  secret: 'your_secret_key',
+  secret: process.env.SESSION_SECRET || 'dev_fallback_secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -42,5 +42,14 @@ app.use('/api/project', projectRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/messages',messageRoutes);
 
+// Global error handler — must have 4 params so Express treats it as error middleware
+app.use((err, req, res, next) => {
+  const status  = err.statusCode || err.status || 500;
+  const message = err.message    || 'Internal Server Error';
+  if (status >= 500) {
+    console.error(`[${req.method} ${req.path}] ${status} — ${message}`);
+  }
+  res.status(status).json({ success: false, message });
+});
 
 module.exports = app;
